@@ -3,188 +3,872 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Product Optimizer</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>AI Product Optimizer - Transform Your E-commerce Data</title>
+    <meta name="description" content="AI-powered product optimization for better visibility on AI shopping assistants">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/heroicons/2.0.18/24/outline/heroicons.min.css" rel="stylesheet">
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
 </head>
-<body>
-    <div id="app">
-        <!-- Header -->
-        <header class="header">
-            <div class="container">
-                <h1><i class="fas fa-bolt"></i> AI Product Optimizer</h1>
-                <div class="api-status">
-                    <span id="api-status">Checking API...</span>
-                </div>
-            </div>
-        </header>
-
-        <!-- Navigation -->
-        <nav class="nav">
-            <div class="container">
-                <button class="nav-btn active" data-tab="dashboard">
-                    <i class="fas fa-chart-bar"></i> Dashboard
-                </button>
-                <button class="nav-btn" data-tab="single">
-                    <i class="fas fa-box"></i> Single Product
-                </button>
-                <button class="nav-btn" data-tab="batch">
-                    <i class="fas fa-upload"></i> Batch Upload
-                </button>
-            </div>
-        </nav>
-
-        <!-- Main Content -->
-        <main class="main">
-            <div class="container">
-                <!-- Loading Overlay -->
-                <div id="loading" class="loading hidden">
-                    <div class="spinner"></div>
-                    <p>Processing your request...</p>
-                </div>
-
-                <!-- Error Message -->
-                <div id="error-message" class="error-message hidden">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <span id="error-text"></span>
-                    <button id="close-error" class="close-btn">&times;</button>
-                </div>
-
-                <!-- Dashboard Tab -->
-                <div id="dashboard" class="tab-content active">
-                    <h2>Dashboard</h2>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <i class="fas fa-box"></i>
-                            <div>
-                                <h3 id="total-products">0</h3>
-                                <p>Total Products</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-check-circle"></i>
-                            <div>
-                                <h3 id="optimized-products">0</h3>
-                                <p>Optimized</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-star"></i>
-                            <div>
-                                <h3 id="average-score">0%</h3>
-                                <p>Average Score</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-layer-group"></i>
-                            <div>
-                                <h3 id="total-batches">0</h3>
-                                <p>Batches</p>
-                            </div>
-                        </div>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white bg-opacity-20 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
                     </div>
-                    
-                    <div class="recent-batches">
-                        <h3>Recent Batches</h3>
-                        <div id="batches-list">
-                            <p class="empty-state">No batches yet. Start optimizing products!</p>
-                        </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">AI Product Optimizer</h1>
+                        <p class="text-blue-100 text-sm">Transform your e-commerce data for AI assistants</p>
                     </div>
                 </div>
-
-                <!-- Single Product Tab -->
-                <div id="single" class="tab-content">
-                    <h2>Single Product Optimization</h2>
-                    <form id="product-form" class="product-form">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="product_id">Product ID *</label>
-                                <input type="text" id="product_id" name="product_id" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="title">Title *</label>
-                                <input type="text" id="title" name="title" required>
-                            </div>
-                            <div class="form-group full-width">
-                                <label for="description">Description *</label>
-                                <textarea id="description" name="description" rows="4" required></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="price">Price *</label>
-                                <input type="number" id="price" name="price" step="0.01" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="currency">Currency</label>
-                                <select id="currency" name="currency">
-                                    <option value="USD">USD</option>
-                                    <option value="EUR">EUR</option>
-                                    <option value="GBP">GBP</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="category">Category *</label>
-                                <input type="text" id="category" name="category" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="brand">Brand *</label>
-                                <input type="text" id="brand" name="brand" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="sku">SKU</label>
-                                <input type="text" id="sku" name="sku">
-                            </div>
-                            <div class="form-group">
-                                <label for="color">Color</label>
-                                <input type="text" id="color" name="color">
-                            </div>
-                            <div class="form-group">
-                                <label for="size">Size</label>
-                                <input type="text" id="size" name="size">
-                            </div>
-                            <div class="form-group">
-                                <label for="material">Material</label>
-                                <input type="text" id="material" name="material">
-                            </div>
-                            <div class="form-group">
-                                <label for="weight">Weight (grams)</label>
-                                <input type="number" id="weight" name="weight" step="0.1">
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-magic"></i> Optimize Product
-                        </button>
-                    </form>
-
-                    <!-- Results -->
-                    <div id="optimization-results" class="results hidden">
-                        <h3>Optimization Results</h3>
-                        <div id="results-content"></div>
-                    </div>
-                </div>
-
-                <!-- Batch Upload Tab -->
-                <div id="batch" class="tab-content">
-                    <h2>Batch Upload</h2>
-                    <div class="upload-area">
-                        <div class="upload-box" id="upload-box">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <p>Drag & drop your CSV file here or click to select</p>
-                            <input type="file" id="csv-file" accept=".csv" style="display: none;">
-                        </div>
-                        <button id="download-template" class="btn btn-secondary">
-                            <i class="fas fa-download"></i> Download Template
-                        </button>
-                    </div>
-                    
-                    <div id="batch-results" class="results hidden">
-                        <h3>Batch Results</h3>
-                        <div id="batch-content"></div>
+                
+                <div class="flex items-center space-x-4">
+                    <div id="api-status" class="px-4 py-2 rounded-full bg-white bg-opacity-20 text-sm">
+                        <span class="inline-block w-2 h-2 bg-yellow-400 rounded-full mr-2"></span>
+                        Checking API...
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="container mx-auto px-4">
+            <div class="flex space-x-1">
+                <button class="nav-btn active px-6 py-4 text-sm font-medium transition-all duration-200" data-tab="dashboard">
+                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    Dashboard
+                </button>
+                <button class="nav-btn px-6 py-4 text-sm font-medium transition-all duration-200" data-tab="single">
+                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                    Single Product
+                </button>
+                <button class="nav-btn px-6 py-4 text-sm font-medium transition-all duration-200" data-tab="batch">
+                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    Batch Upload
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg p-8 max-w-md mx-4 text-center">
+            <div class="spinner mx-auto mb-4"></div>
+            <h3 class="text-lg font-semibold mb-2">Processing Your Request</h3>
+            <p class="text-gray-600">AI is optimizing your product data...</p>
+        </div>
     </div>
 
-    <script src="/static/app.js"></script>
+    <!-- Success Toast -->
+    <div id="success-toast" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-40 hidden">
+        <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span id="success-message">Success!</span>
+        </div>
+    </div>
+
+    <!-- Error Toast -->
+    <div id="error-toast" class="fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-40 hidden">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span id="error-message">Error occurred</span>
+            </div>
+            <button onclick="hideError()" class="ml-4 hover:text-gray-200">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Dashboard</h2>
+                <p class="text-gray-600">Monitor your product optimization performance</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-sm p-6 card-hover transition-all duration-200">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 id="total-products" class="text-2xl font-bold text-gray-900">0</h3>
+                            <p class="text-gray-600 text-sm">Total Products</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm p-6 card-hover transition-all duration-200">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 id="optimized-products" class="text-2xl font-bold text-gray-900">0</h3>
+                            <p class="text-gray-600 text-sm">Optimized</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm p-6 card-hover transition-all duration-200">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 id="average-score" class="text-2xl font-bold text-gray-900">0%</h3>
+                            <p class="text-gray-600 text-sm">Average Score</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm p-6 card-hover transition-all duration-200">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 id="total-batches" class="text-2xl font-bold text-gray-900">0</h3>
+                            <p class="text-gray-600 text-sm">Batches</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Batches -->
+            <div class="bg-white rounded-xl shadow-sm">
+                <div class="p-6 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Recent Optimizations</h3>
+                </div>
+                <div id="batches-list" class="p-6">
+                    <div class="text-center py-12">
+                        <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                        </svg>
+                        <h4 class="text-lg font-medium text-gray-900 mb-2">No optimizations yet</h4>
+                        <p class="text-gray-600">Start by optimizing your first product or uploading a CSV file</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Single Product Tab -->
+        <div id="single" class="tab-content hidden">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Single Product Optimization</h2>
+                <p class="text-gray-600">Optimize individual products for AI shopping assistants</p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-8">
+                <form id="product-form">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <!-- Required Fields -->
+                        <div class="space-y-6">
+                            <h3 class="text-lg font-semibold text-gray-900 border-b pb-2">Required Information</h3>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Product ID *</label>
+                                <input type="text" name="product_id" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., PROD-001">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Product Title *</label>
+                                <input type="text" name="title" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., Premium Wireless Headphones">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Price *</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-3 text-gray-500">$</span>
+                                    <input type="number" name="price" step="0.01" required class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="99.99">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+                                <input type="text" name="category" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., Electronics">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Brand *</label>
+                                <input type="text" name="brand" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., TechBrand">
+                            </div>
+                        </div>
+
+                        <!-- Optional Fields -->
+                        <div class="space-y-6">
+                            <h3 class="text-lg font-semibold text-gray-900 border-b pb-2">Optional Details</h3>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Currency</label>
+                                <select name="currency" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="USD">USD - US Dollar</option>
+                                    <option value="EUR">EUR - Euro</option>
+                                    <option value="GBP">GBP - British Pound</option>
+                                    <option value="CAD">CAD - Canadian Dollar</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">SKU</label>
+                                <input type="text" name="sku" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., WH-001-BLK">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Color</label>
+                                    <input type="text" name="color" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., Black">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Size</label>
+                                    <input type="text" name="size" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., Large">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Material</label>
+                                <input type="text" name="material" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., Plastic, Metal">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Weight (grams)</label>
+                                <input type="number" name="weight" step="0.1" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="250">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description Field -->
+                    <div class="mb-8">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Product Description *</label>
+                        <textarea name="description" rows="4" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Describe your product in detail. Include key features, benefits, and what makes it special..."></textarea>
+                        <p class="text-sm text-gray-500 mt-1">Minimum 20 characters for best optimization results</p>
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        Optimize Product with AI
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            <div id="optimization-results" class="mt-8 hidden">
+                <div class="bg-white rounded-xl shadow-sm">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">Optimization Results</h3>
+                    </div>
+                    <div id="results-content" class="p-6">
+                        <!-- Results will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Batch Upload Tab -->
+        <div id="batch" class="tab-content hidden">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Batch Upload</h2>
+                <p class="text-gray-600">Upload CSV files to optimize multiple products at once</p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-8">
+                <div class="text-center mb-8">
+                    <div id="upload-area" class="border-2 border-dashed border-gray-300 rounded-xl p-12 transition-colors duration-200 hover:border-blue-400 hover:bg-blue-50 cursor-pointer">
+                        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Upload your CSV file</h3>
+                        <p class="text-gray-600 mb-4">Drag and drop your file here, or click to browse</p>
+                        <button type="button" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">Choose File</button>
+                        <input type="file" id="csv-file" accept=".csv" class="hidden">
+                    </div>
+                </div>
+
+                <div class="flex justify-center">
+                    <button id="download-template" class="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors duration-200 flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Download CSV Template
+                    </button>
+                </div>
+            </div>
+
+            <!-- Batch Results -->
+            <div id="batch-results" class="mt-8 hidden">
+                <div class="bg-white rounded-xl shadow-sm">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">Batch Processing Results</h3>
+                    </div>
+                    <div id="batch-content" class="p-6">
+                        <!-- Batch results will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Initialize the application
+        class AIOptimizer {
+            constructor() {
+                this.apiUrl = window.location.origin + '/api';
+                this.currentTab = 'dashboard';
+                this.batchResults = [];
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.checkApiStatus();
+                this.updateDashboard();
+            }
+
+            setupEventListeners() {
+                // Tab navigation
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        this.switchTab(e.target.closest('.nav-btn').dataset.tab);
+                    });
+                });
+
+                // Product form
+                document.getElementById('product-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.optimizeSingleProduct();
+                });
+
+                // File upload
+                document.getElementById('upload-area').addEventListener('click', () => {
+                    document.getElementById('csv-file').click();
+                });
+
+                document.getElementById('csv-file').addEventListener('change', (e) => {
+                    this.handleCsvUpload(e.target.files[0]);
+                });
+
+                // Download template
+                document.getElementById('download-template').addEventListener('click', () => {
+                    this.downloadTemplate();
+                });
+            }
+
+            switchTab(tab) {
+                // Update navigation
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.classList.remove('active', 'bg-blue-50', 'text-blue-600', 'border-blue-200');
+                    btn.classList.add('text-gray-600', 'hover:text-gray-900');
+                });
+                
+                const activeBtn = document.querySelector(`[data-tab="${tab}"]`);
+                activeBtn.classList.remove('text-gray-600', 'hover:text-gray-900');
+                activeBtn.classList.add('active', 'bg-blue-50', 'text-blue-600', 'border-blue-200');
+
+                // Update content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.add('hidden');
+                });
+                document.getElementById(tab).classList.remove('hidden');
+
+                this.currentTab = tab;
+            }
+
+            async checkApiStatus() {
+                try {
+                    const response = await fetch(`${this.apiUrl}/test-key`);
+                    const data = await response.json();
+                    
+                    const statusElement = document.getElementById('api-status');
+                    if (data.status === 'success') {
+                        statusElement.innerHTML = `
+                            <span class="inline-block w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                            API Ready
+                        `;
+                        statusElement.className = 'px-4 py-2 rounded-full bg-green-100 text-green-800 text-sm';
+                    } else {
+                        statusElement.innerHTML = `
+                            <span class="inline-block w-2 h-2 bg-red-400 rounded-full mr-2"></span>
+                            API Error
+                        `;
+                        statusElement.className = 'px-4 py-2 rounded-full bg-red-100 text-red-800 text-sm';
+                        this.showError('API key not working: ' + data.message);
+                    }
+                } catch (error) {
+                    const statusElement = document.getElementById('api-status');
+                    statusElement.innerHTML = `
+                        <span class="inline-block w-2 h-2 bg-red-400 rounded-full mr-2"></span>
+                        Connection Error
+                    `;
+                    statusElement.className = 'px-4 py-2 rounded-full bg-red-100 text-red-800 text-sm';
+                    this.showError('Failed to connect to API');
+                }
+            }
+
+            async optimizeSingleProduct() {
+                const formData = new FormData(document.getElementById('product-form'));
+                const productData = {};
+                
+                for (let [key, value] of formData.entries()) {
+                    if (key === 'price' || key === 'weight') {
+                        productData[key] = value ? parseFloat(value) : null;
+                    } else {
+                        productData[key] = value || null;
+                    }
+                }
+
+                // Remove null/empty values
+                Object.keys(productData).forEach(key => {
+                    if (productData[key] === null || productData[key] === '') {
+                        delete productData[key];
+                    }
+                });
+
+                this.showLoading();
+                try {
+                    const response = await fetch(`${this.apiUrl}/optimize-product`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(productData)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    this.displayOptimizationResults(result);
+                    this.showSuccess('Product optimized successfully!');
+                } catch (error) {
+                    this.showError('Optimization failed: ' + error.message);
+                } finally {
+                    this.hideLoading();
+                }
+            }
+
+            async handleCsvUpload(file) {
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                this.showLoading();
+                try {
+                    const response = await fetch(`${this.apiUrl}/upload-csv`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    await this.optimizeBatch(result.products);
+                } catch (error) {
+                    this.showError('CSV upload failed: ' + error.message);
+                    this.hideLoading();
+                }
+            }
+
+            async optimizeBatch(products) {
+                try {
+                    const response = await fetch(`${this.apiUrl}/optimize-batch`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ products })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    this.batchResults.unshift(result);
+                    this.updateDashboard();
+                    this.displayBatchResults(result);
+                    this.switchTab('dashboard');
+                    this.showSuccess(`Batch optimization completed! ${result.summary?.successful}/${result.summary?.total_products} products optimized.`);
+                } catch (error) {
+                    this.showError('Batch optimization failed: ' + error.message);
+                } finally {
+                    this.hideLoading();
+                }
+            }
+
+            displayOptimizationResults(result) {
+                const resultsDiv = document.getElementById('optimization-results');
+                const contentDiv = document.getElementById('results-content');
+                
+                contentDiv.innerHTML = `
+                    <div class="space-y-8">
+                        <!-- Optimization Score -->
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="text-lg font-semibold text-gray-900">Optimization Score</h4>
+                                <span class="text-2xl font-bold text-blue-600">${Math.round(result.optimization_score * 100)}%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-3">
+                                <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-3 rounded-full transition-all duration-500" style="width: ${result.optimization_score * 100}%"></div>
+                            </div>
+                        </div>
+
+                        <!-- AI Optimized Content -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div class="space-y-6">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-900 mb-3">AI Optimized Title</h4>
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <p class="text-gray-800">${result.ai_title}</p>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-900 mb-3">AI Summary</h4>
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <p class="text-gray-800">${result.ai_summary}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-6">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-900 mb-3">Semantic Tags</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        ${result.semantic_tags.map(tag => `
+                                            <span class="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">${tag}</span>
+                                        `).join('')}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-900 mb-3">Use Cases</h4>
+                                    <ul class="space-y-2">
+                                        ${result.use_cases.map(useCase => `
+                                            <li class="flex items-start">
+                                                <span class="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                                                <span class="text-gray-700">${useCase}</span>
+                                            </li>
+                                        `).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Description -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-3">AI Optimized Description</h4>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <p class="text-gray-800 leading-relaxed">${result.ai_description}</p>
+                            </div>
+                        </div>
+
+                        <!-- FAQ Content -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">FAQ Content for AI Assistants</h4>
+                            <div class="space-y-4">
+                                ${result.faq_content.map(faq => `
+                                    <div class="border border-gray-200 rounded-lg p-4">
+                                        <h5 class="font-medium text-gray-900 mb-2">${faq.question}</h5>
+                                        <p class="text-gray-700">${faq.answer}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Conversational Queries -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-3">Conversational Queries</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                ${result.conversational_queries.map(query => `
+                                    <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                                        <p class="text-green-800 text-sm">"${query}"</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                resultsDiv.classList.remove('hidden');
+                resultsDiv.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            displayBatchResults(result) {
+                const resultsDiv = document.getElementById('batch-results');
+                const contentDiv = document.getElementById('batch-content');
+                
+                contentDiv.innerHTML = `
+                    <div class="space-y-6">
+                        <!-- Summary -->
+                        <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-6">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">Batch Processing Summary</h4>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-gray-900">${result.summary.total_products}</div>
+                                    <div class="text-sm text-gray-600">Total Products</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-green-600">${result.summary.successful}</div>
+                                    <div class="text-sm text-gray-600">Successful</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-red-600">${result.summary.failed}</div>
+                                    <div class="text-sm text-gray-600">Failed</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-blue-600">${Math.round(result.summary.average_score * 100)}%</div>
+                                    <div class="text-sm text-gray-600">Avg Score</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Export Options -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">Export Optimized Data</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <button onclick="aiOptimizer.exportFeed('${result.batch_id}', 'google')" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    Google Merchant XML
+                                </button>
+                                <button onclick="aiOptimizer.exportFeed('${result.batch_id}', 'meta')" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors duration-200 flex items-center justify-center">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    Meta/TikTok CSV
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                resultsDiv.classList.remove('hidden');
+            }
+
+            async exportFeed(batchId, type) {
+                const endpoint = type === 'google' ? 'google-merchant' : 'meta-csv';
+                const filename = type === 'google' ? `google_merchant_${batchId}.xml` : `meta_feed_${batchId}.csv`;
+                
+                try {
+                    const response = await fetch(`${this.apiUrl}/export/${endpoint}/${batchId}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Export failed: ${response.status}`);
+                    }
+                    
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    
+                    this.showSuccess(`${type === 'google' ? 'Google Merchant' : 'Meta/TikTok'} feed exported successfully!`);
+                } catch (error) {
+                    this.showError('Export failed: ' + error.message);
+                }
+            }
+
+            downloadTemplate() {
+                const csvContent = 'id,title,description,price,category,brand,currency,sku,color,size,material\n' +
+                                  'prod-001,"Premium Wireless Headphones","High-quality wireless headphones with active noise cancellation",299.99,"Electronics","TechBrand","USD","WH-001","Black","One Size","Plastic"';
+                
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'product_template.csv';
+                a.click();
+                window.URL.revokeObjectURL(url);
+                
+                this.showSuccess('Template downloaded successfully!');
+            }
+
+            updateDashboard() {
+                const totalProducts = this.batchResults.reduce((sum, batch) => sum + (batch.summary?.total_products || 0), 0);
+                const totalOptimized = this.batchResults.reduce((sum, batch) => sum + (batch.summary?.successful || 0), 0);
+                const avgScore = this.batchResults.length > 0 
+                    ? this.batchResults.reduce((sum, batch) => sum + (batch.summary?.average_score || 0), 0) / this.batchResults.length 
+                    : 0;
+
+                document.getElementById('total-products').textContent = totalProducts.toLocaleString();
+                document.getElementById('optimized-products').textContent = totalOptimized.toLocaleString();
+                document.getElementById('average-score').textContent = Math.round(avgScore * 100) + '%';
+                document.getElementById('total-batches').textContent = this.batchResults.length;
+
+                // Update batches list
+                const batchesList = document.getElementById('batches-list');
+                if (this.batchResults.length === 0) {
+                    batchesList.innerHTML = `
+                        <div class="text-center py-12">
+                            <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                            </svg>
+                            <h4 class="text-lg font-medium text-gray-900 mb-2">No optimizations yet</h4>
+                            <p class="text-gray-600">Start by optimizing your first product or uploading a CSV file</p>
+                        </div>
+                    `;
+                } else {
+                    batchesList.innerHTML = this.batchResults.map((batch, index) => `
+                        <div class="border border-gray-200 rounded-lg p-4 mb-4 hover:shadow-md transition-shadow duration-200">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Batch #${this.batchResults.length - index}</h4>
+                                    <p class="text-sm text-gray-600">ID: ${batch.batch_id?.slice(-8) || 'Unknown'}</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm text-gray-500">Score: ${Math.round((batch.summary?.average_score || 0) * 100)}%</div>
+                                    <div class="text-sm text-gray-500">Success: ${batch.summary?.successful || 0}/${batch.summary?.total_products || 0}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            showLoading() {
+                document.getElementById('loading-overlay').classList.remove('hidden');
+            }
+
+            hideLoading() {
+                document.getElementById('loading-overlay').classList.add('hidden');
+            }
+
+            showSuccess(message) {
+                const toast = document.getElementById('success-toast');
+                document.getElementById('success-message').textContent = message;
+                toast.classList.remove('hidden');
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 5000);
+            }
+
+            showError(message) {
+                const toast = document.getElementById('error-toast');
+                document.getElementById('error-message').textContent = message;
+                toast.classList.remove('hidden');
+            }
+        }
+
+        // Global function for hiding error toast
+        function hideError() {
+            document.getElementById('error-toast').classList.add('hidden');
+        }
+
+        // Initialize the app
+        const aiOptimizer = new AIOptimizer();
+    </script>
 </body>
 </html>
