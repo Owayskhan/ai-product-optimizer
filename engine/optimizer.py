@@ -1,3 +1,4 @@
+# engine/optimizer.py
 import json
 import asyncio
 from typing import Dict, List, Any, Optional
@@ -17,9 +18,23 @@ class ProductOptimizationEngine:
             raise ValueError("API key is required")
         
         self.api_key = api_key
-        self.client = anthropic.Anthropic(api_key=api_key)
+        
+        # Updated Anthropic client initialization
+        try:
+            self.client = anthropic.Anthropic(
+                api_key=api_key,
+                timeout=30.0,
+                max_retries=2
+            )
+        except Exception as e:
+            logger.error(f"Failed to initialize Anthropic client: {e}")
+            # Fallback initialization
+            self.client = anthropic.Anthropic(api_key=api_key)
+        
         self.model = os.getenv("AI_MODEL", "claude-3-5-sonnet-20241022")
         self.max_tokens = int(os.getenv("MAX_TOKENS", "3000"))
+        
+        logger.info(f"ProductOptimizationEngine initialized successfully")
         
     async def optimize_product(self, product: ProductInput) -> OptimizedProduct:
         try:
@@ -115,21 +130,42 @@ class ProductOptimizationEngine:
         )
         
         try:
+            logger.info("Making request to Anthropic API...")
+            
             response = self.client.messages.create(
                 model=self.model,
                 max_tokens=self.max_tokens,
                 temperature=0.3,
-                messages=[{"role": "user", "content": prompt}]
+                messages=[{
+                    "role": "user",
+                    "content": prompt
+                }]
             )
+            
+            logger.info("Received response from Anthropic API")
             
             content = response.content[0].text
             if content.startswith('```json'):
                 content = content.replace('```json', '').replace('```', '').strip()
             
-            return json.loads(content)
+            result = json.loads(content)
+            logger.info("Successfully parsed optimization data")
+            return result
             
+        except anthropic.AuthenticationError as e:
+            logger.error(f"Authentication error: {str(e)}")
+            raise Exception(f"Invalid API key: {str(e)}")
+        except anthropic.RateLimitError as e:
+            logger.error(f"Rate limit error: {str(e)}")
+            raise Exception(f"Rate limit exceeded: {str(e)}")
+        except anthropic.APIError as e:
+            logger.error(f"Anthropic API error: {str(e)}")
+            raise Exception(f"Anthropic API error: {str(e)}")
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON parsing error: {str(e)}")
+            raise Exception("Invalid AI response format")
         except Exception as e:
-            logger.error(f"AI optimization failed: {str(e)}")
+            logger.error(f"Unexpected error in AI optimization: {str(e)}")
             raise Exception(f"AI service error: {str(e)}")
     
     async def _generate_schemas(self, product: ProductInput, optimization_data: Dict) -> Dict[str, Any]:
@@ -153,6 +189,7 @@ class ProductOptimizationEngine:
             return json.loads(content)
             
         except Exception as e:
+            logger.warning(f"Schema generation failed, using fallback: {e}")
             return self._generate_basic_schema(product, optimization_data)
     
     async def _generate_shadow_page(self, product: ProductInput, optimization_data: Dict) -> str:
@@ -172,6 +209,7 @@ class ProductOptimizationEngine:
             return response.content[0].text
             
         except Exception as e:
+            logger.warning(f"Shadow page generation failed, using fallback: {e}")
             return self._generate_basic_shadow_page(product, optimization_data)
     
     def _generate_meta_data(self, product: ProductInput, optimization_data: Dict) -> Dict[str, Any]:
