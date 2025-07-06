@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Product Optimizer</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <h1><i class="fas fa-bolt"></i> AI Product Optimizer</h1>
+                <div class="api-status">
+                    <span id="api-status">Checking API...</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav">
+            <div class="container">
+                <button class="nav-btn active" data-tab="dashboard">
+                    <i class="fas fa-chart-bar"></i> Dashboard
+                </button>
+                <button class="nav-btn" data-tab="single">
+                    <i class="fas fa-box"></i> Single Product
+                </button>
+                <button class="nav-btn" data-tab="batch">
+                    <i class="fas fa-upload"></i> Batch Upload
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main">
+            <div class="container">
+                <!-- Loading Overlay -->
+                <div id="loading" class="loading hidden">
+                    <div class="spinner"></div>
+                    <p>Processing your request...</p>
+                </div>
+
+                <!-- Error Message -->
+                <div id="error-message" class="error-message hidden">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span id="error-text"></span>
+                    <button id="close-error" class="close-btn">&times;</button>
+                </div>
+
+                <!-- Dashboard Tab -->
+                <div id="dashboard" class="tab-content active">
+                    <h2>Dashboard</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <i class="fas fa-box"></i>
+                            <div>
+                                <h3 id="total-products">0</h3>
+                                <p>Total Products</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <h3 id="optimized-products">0</h3>
+                                <p>Optimized</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-star"></i>
+                            <div>
+                                <h3 id="average-score">0%</h3>
+                                <p>Average Score</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-layer-group"></i>
+                            <div>
+                                <h3 id="total-batches">0</h3>
+                                <p>Batches</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="recent-batches">
+                        <h3>Recent Batches</h3>
+                        <div id="batches-list">
+                            <p class="empty-state">No batches yet. Start optimizing products!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Single Product Tab -->
+                <div id="single" class="tab-content">
+                    <h2>Single Product Optimization</h2>
+                    <form id="product-form" class="product-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="product_id">Product ID *</label>
+                                <input type="text" id="product_id" name="product_id" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="title">Title *</label>
+                                <input type="text" id="title" name="title" required>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="description">Description *</label>
+                                <textarea id="description" name="description" rows="4" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="price">Price *</label>
+                                <input type="number" id="price" name="price" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="currency">Currency</label>
+                                <select id="currency" name="currency">
+                                    <option value="USD">USD</option>
+                                    <option value="EUR">EUR</option>
+                                    <option value="GBP">GBP</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="category">Category *</label>
+                                <input type="text" id="category" name="category" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="brand">Brand *</label>
+                                <input type="text" id="brand" name="brand" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sku">SKU</label>
+                                <input type="text" id="sku" name="sku">
+                            </div>
+                            <div class="form-group">
+                                <label for="color">Color</label>
+                                <input type="text" id="color" name="color">
+                            </div>
+                            <div class="form-group">
+                                <label for="size">Size</label>
+                                <input type="text" id="size" name="size">
+                            </div>
+                            <div class="form-group">
+                                <label for="material">Material</label>
+                                <input type="text" id="material" name="material">
+                            </div>
+                            <div class="form-group">
+                                <label for="weight">Weight (grams)</label>
+                                <input type="number" id="weight" name="weight" step="0.1">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-magic"></i> Optimize Product
+                        </button>
+                    </form>
+
+                    <!-- Results -->
+                    <div id="optimization-results" class="results hidden">
+                        <h3>Optimization Results</h3>
+                        <div id="results-content"></div>
+                    </div>
+                </div>
+
+                <!-- Batch Upload Tab -->
+                <div id="batch" class="tab-content">
+                    <h2>Batch Upload</h2>
+                    <div class="upload-area">
+                        <div class="upload-box" id="upload-box">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Drag & drop your CSV file here or click to select</p>
+                            <input type="file" id="csv-file" accept=".csv" style="display: none;">
+                        </div>
+                        <button id="download-template" class="btn btn-secondary">
+                            <i class="fas fa-download"></i> Download Template
+                        </button>
+                    </div>
+                    
+                    <div id="batch-results" class="results hidden">
+                        <h3>Batch Results</h3>
+                        <div id="batch-content"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
