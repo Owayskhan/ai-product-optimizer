@@ -1,4 +1,3 @@
-# engine/optimizer.py
 import json
 import asyncio
 from typing import Dict, List, Any, Optional
@@ -24,10 +23,10 @@ class ProductOptimizationEngine:
             self.client = anthropic.Anthropic(
                 api_key=api_key,
                 timeout=30.0,
-                max_retries=2
+                max_retries=3
             )
         except Exception as e:
-            logger.error(f"Failed to initialize Anthropic client: {e}")
+            logger.error(f"Failed to initialize Anthropic client: {str(e)}")
             # Fallback initialization
             self.client = anthropic.Anthropic(api_key=api_key)
         
@@ -82,7 +81,7 @@ class ProductOptimizationEngine:
         results = []
         errors = []
         
-        max_concurrent = options.get('max_concurrent', 3) if options else 3
+        max_concurrent = options.get('max_concurrent', 2) if options else 2  # Reduced for stability
         semaphore = asyncio.Semaphore(max_concurrent)
         
         async def optimize_with_semaphore(product):
@@ -132,14 +131,12 @@ class ProductOptimizationEngine:
         try:
             logger.info("Making request to Anthropic API...")
             
+            # Enhanced error handling for API calls
             response = self.client.messages.create(
                 model=self.model,
                 max_tokens=self.max_tokens,
                 temperature=0.3,
-                messages=[{
-                    "role": "user",
-                    "content": prompt
-                }]
+                messages=[{"role": "user", "content": prompt}]
             )
             
             logger.info("Received response from Anthropic API")
@@ -148,21 +145,23 @@ class ProductOptimizationEngine:
             if content.startswith('```json'):
                 content = content.replace('```json', '').replace('```', '').strip()
             
-            result = json.loads(content)
-            logger.info("Successfully parsed optimization data")
-            return result
+            parsed_content = json.loads(content)
+            logger.info("Successfully parsed AI response")
+            
+            return parsed_content
             
         except anthropic.AuthenticationError as e:
-            logger.error(f"Authentication error: {str(e)}")
-            raise Exception(f"Invalid API key: {str(e)}")
+            logger.error(f"Anthropic authentication failed: {str(e)}")
+            raise Exception(f"Invalid API key. Please check your Anthropic API key: {str(e)}")
         except anthropic.RateLimitError as e:
-            logger.error(f"Rate limit error: {str(e)}")
-            raise Exception(f"Rate limit exceeded: {str(e)}")
+            logger.error(f"Anthropic rate limit exceeded: {str(e)}")
+            raise Exception(f"Rate limit exceeded. Please try again later: {str(e)}")
         except anthropic.APIError as e:
             logger.error(f"Anthropic API error: {str(e)}")
             raise Exception(f"Anthropic API error: {str(e)}")
         except json.JSONDecodeError as e:
-            logger.error(f"JSON parsing error: {str(e)}")
+            logger.error(f"Failed to parse AI response as JSON: {e}")
+            logger.error(f"Raw response content: {content if 'content' in locals() else 'No content'}")
             raise Exception("Invalid AI response format")
         except Exception as e:
             logger.error(f"Unexpected error in AI optimization: {str(e)}")
