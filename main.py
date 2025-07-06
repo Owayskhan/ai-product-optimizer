@@ -62,49 +62,49 @@ async def test_api_key():
     try:
         api_key = get_api_key()
         
-        # Updated client initialization for testing
-        client = anthropic.Anthropic(
-            api_key=api_key,
-            timeout=30.0
-        )
+        if not api_key:
+            return {
+                "status": "error",
+                "message": "API key not found in environment variables"
+            }
         
-        logger.info("Testing Anthropic API connection...")
+        if not api_key.startswith("sk-ant-"):
+            return {
+                "status": "error",
+                "message": "Invalid API key format. Should start with 'sk-ant-'"
+            }
         
+        # Test with a simple client initialization
+        client = anthropic.Anthropic(api_key=api_key)
+        
+        # Simple test message
         response = client.messages.create(
             model="claude-3-5-sonnet-20241022",
             max_tokens=50,
-            messages=[{
-                "role": "user", 
-                "content": "Respond with exactly: 'API connection successful'"
-            }]
+            messages=[{"role": "user", "content": "Hello, respond with 'API working'"}]
         )
-        
-        response_text = response.content[0].text
-        logger.info(f"Test successful: {response_text}")
         
         return {
             "status": "success",
             "message": "API key is working correctly",
-            "response": response_text
+            "response": response.content[0].text,
+            "api_key_prefix": api_key[:15] + "..."
         }
         
     except anthropic.AuthenticationError as e:
-        logger.error(f"Authentication error: {str(e)}")
         return {
             "status": "error",
-            "message": f"Invalid API key: {str(e)}"
+            "message": f"Authentication failed: {str(e)}"
         }
     except anthropic.APIError as e:
-        logger.error(f"API error: {str(e)}")
-        return {
-            "status": "error", 
-            "message": f"Anthropic API error: {str(e)}"
-        }
-    except Exception as e:
-        logger.error(f"Unexpected error: {str(e)}")
         return {
             "status": "error",
-            "message": f"Connection error: {str(e)}"
+            "message": f"API error: {str(e)}"
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Unexpected error: {str(e)}"
         }
 
 @app.post("/api/optimize-product")
